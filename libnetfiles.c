@@ -57,6 +57,9 @@ ERRORS:
 
 int netopen(const char * pathname, int flags){
 	
+	//Open socket connection everytime we open the file --- one of the way to design it
+	
+	
 	errno = 0;
 	int fileDescriptor = open(pathname, flags);
 
@@ -66,6 +69,7 @@ int netopen(const char * pathname, int flags){
 
 	} else {
 		//Opening file failed, set errno and return -1
+		//errno = EBADF;
 		perror("Error opening file");
 		return -1;
 
@@ -92,6 +96,7 @@ ssize_t netread(int fileDesc, void *buffer, size_t noOfByte) {
 
 	} else {
 		//Reading of file failed, set errno and return -1
+		//errno = EBADF;
 		perror("Error reading the file");
 		return -1;	
 
@@ -118,6 +123,7 @@ ssize_t netwrite(int fileDesc, const void *buffer, size_t noOfByte) {
 
 	} else {
 		//Writing to file failed, set errno and return -1
+		//errno = EBADF;
 		perror("Error writing to file");
 		return -1;
 
@@ -136,13 +142,13 @@ int netclose(int fileDesc) {
 
 	if (fpClose == -1){
 		//Closing of file failed, set errno and return -1
+		//errno = EBADF;
 		perror("Error closing the file");
 		return -1;
 
 	} else {
-		
+		//File closed successfully, so return
 		return 0;
-
 	}
 }
 
@@ -153,7 +159,7 @@ ERRORS:
 	optional (if you do extension A): INVALID_FILE_MODE (be sure to include #define of this error code in your .h if you implement it)
 ***/
 
-netserverinit(char * hostName, int fileMode) {
+int netserverinit(char * hostName, int fileMode) {
 	
 	
 	h_errno = 0;
@@ -173,7 +179,7 @@ netserverinit(char * hostName, int fileMode) {
 	if (result) {
 		//connection failed
 		h_errno = HOST_NOT_FOUND;
-		freeaddrinfo(ptr); //free up the memory
+		freeaddrinfo(infoptr); //free up the memory
 		//return -1;
 		exit(0);
 
